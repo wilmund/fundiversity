@@ -77,13 +77,17 @@ fd_fdis <- function(traits, sp_com) {
 
   centros <- sp_com %*% traits
 
-  # Transform (a-b)^2 to a^2 + b^2 - 2ab to avoid explicit loop
-  centros_sq   <- rowSums(centros^2)
-  traits_sq    <- rowSums(traits^2)
-  dists_sq <- outer(centros_sq, traits_sq, `+`) - 2 * tcrossprod(centros, traits)
-  # Floating-point cancellation can make near-zero squared distances slightly
-  # negative (species at the centroid, e.g. single-species sites) -> NaN
-  dists_to_centro <- sqrt(pmax(dists_sq, 0))
+  # Sum squared centroid-to-species differences one trait at a time: exact
+  # zero when a species sits at its site's centroid (e.g. single-species
+  # sites), unlike the a^2 + b^2 - 2ab expansion whose cancellation error
+  # produces NaN through sqrt() of small negative values
+  dists_sq <- matrix(0, nrow = nrow(centros), ncol = nrow(traits))
+
+  for (trait_col in seq_len(ncol(traits))) {
+    dists_sq <- dists_sq + outer(centros[, trait_col], traits[, trait_col], `-`)^2
+  }
+
+  dists_to_centro <- sqrt(dists_sq)
 
   fdis_site <- rowSums(sp_com * dists_to_centro)
 

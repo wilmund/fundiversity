@@ -150,5 +150,5 @@ test_that("Functional Dispersion has no NaN for single-species sites", {
   fdis <- expect_silent(fd_fdis(traits_birds, site_sp))
 
   expect_false(anyNA(fdis$FDis))
-  expect_equal(fdis$FDis, rep(0, nrow(site_sp)), tolerance = 1e-6)
+  expect_identical(fdis$FDis, rep(0, nrow(site_sp)))
 })
