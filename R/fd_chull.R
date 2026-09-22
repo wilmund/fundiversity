@@ -5,6 +5,17 @@ fd_chull <- function(traits) {
 
   traits <- traits[!duplicated(traits),, drop = FALSE]
 
+  # Empty species set (e.g. site without species): volume is undefined.
+  # Checked before the single-trait branch where max()/min() would return -Inf
+  if (nrow(traits) == 0L) {
+    return(list(
+      "hull" = integer(0),
+      "area" = NA_real_,
+      "vol" = NA_real_,
+      p = traits
+    ))
+  }
+
   if (ncol(traits) == 1L) {
    return(list(
      "hull" = c(which.min(traits), which.max(traits)),

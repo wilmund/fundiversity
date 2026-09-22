@@ -6,13 +6,26 @@ fd_chull_intersect <- function(traits1, traits2) {
   traits1 <- traits1[!duplicated(traits1),, drop = FALSE]
   traits2 <- traits2[!duplicated(traits2),, drop = FALSE]
 
+  # Empty species set (e.g. site without species): intersection is undefined.
+  # Checked before the single-trait branch where max()/min() would return -Inf
+  if (nrow(traits1) == 0L || nrow(traits2) == 0L) {
+    return(
+      list(
+        "hull" = integer(0),
+        "area" = NA_real_,
+        "vol" = NA_real_
+      )
+    )
+  }
+
   if (ncol(traits1) == 1L && ncol(traits2) == 1L) {
 
-    # Range of the overlap
-    r3 <- c(max(traits1, traits2),
-            min(traits1, traits2))
+    # Range of the overlap: from the larger of the two range minima
+    # to the smaller of the two range maxima, 0 when the ranges are disjoint
+    r3 <- c(max(min(traits1), min(traits2)),
+            min(max(traits1), max(traits2)))
 
-    r_overlap <- r3[2] - r3[1]
+    r_overlap <- max(r3[2] - r3[1], 0)
 
     return(
       list(

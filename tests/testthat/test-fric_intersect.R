@@ -250,3 +250,25 @@ test_that("Functional Richness Intersection fails gracefully", {
     fixed = TRUE
   )
 })
+
+test_that("FRic_intersect computes range overlap with a single trait", {
+
+  single_trait <- matrix(
+    c(0, 1, 5, 6), ncol = 1, dimnames = list(letters[1:4], "trait1")
+  )
+  site_sp <- matrix(
+    c(1, 1, 0, 0,
+      0, 0, 1, 1,
+      1, 1, 1, 1), nrow = 3, byrow = TRUE,
+    dimnames = list(c("s1", "s2", "s3"), letters[1:4])
+  )
+
+  fric_int <- fd_fric_intersect(single_trait, site_sp)
+  pairs <- paste(fric_int$first_site, fric_int$second_site, sep = "|")
+
+  # s1 = [0, 1] and s2 = [5, 6] are disjoint; both are nested in s3 = [0, 6]
+  expect_equal(
+    fric_int$FRic_intersect[match(c("s1|s2", "s1|s3", "s2|s3"), pairs)],
+    c(0, 1, 1)
+  )
+})

@@ -3,6 +3,17 @@
 * `fd_fdis()` is now ~20x faster, removing the need for parallel
   processing.
 
+## Bug fixes
+
+* `fd_fric_intersect()` now computes the actual overlap of site trait ranges
+when used with a single trait; it previously returned the negated range of the
+union of the two sites.
+* `fd_fdis()` no longer returns `NaN` for sites whose species sit exactly at
+the trait centroid (e.g. single-species sites), a floating-point edge case of
+the new vectorised implementation.
+* `fd_fric()` and `fd_fric_intersect()` now return `NA` instead of `-Inf` for
+sites without species when used with a single trait.
+
 # fundiversity 1.1.0
 
 ##  Minor changes

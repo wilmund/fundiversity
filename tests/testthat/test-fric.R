@@ -219,3 +219,22 @@ test_that("Functional Richness fails gracefully", {
     fixed = TRUE
   )
 })
+
+test_that("Functional Richness is NA for an empty site with a single trait", {
+
+  single_trait <- matrix(
+    c(1, 2, 3), ncol = 1, dimnames = list(letters[1:3], "trait1")
+  )
+  site_sp <- matrix(
+    c(1, 1, 1,
+      0, 0, 0), nrow = 2, byrow = TRUE,
+    dimnames = list(c("s1", "s2"), letters[1:3])
+  )
+
+  expect_warning(
+    fric <- fd_fric(single_trait, site_sp),
+    "Some sites had less species than traits so returned FRic is 'NA'",
+    fixed = TRUE
+  )
+  expect_identical(fric$FRic, c(2, NA_real_))
+})
